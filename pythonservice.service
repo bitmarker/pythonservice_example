@@ -1,0 +1,11 @@
+[Unit]
+Description=My Python Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/developer/Documents/pythonservice/pythonservice.sh
+WorkingDirectory=/home/developer/Documents/pythonservice/
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,1 @@
+sudo cp ./*.service /lib/systemd/system/

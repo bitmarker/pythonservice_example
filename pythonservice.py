@@ -1,39 +1,63 @@
 import logging
-import logging.handlers
+import threading
+import time
+import signal
+import sys
 
-# Set the debug level
-logging.basicConfig(level=logging.DEBUG)
-# Create a logger
-logger = logging.getLogger(__name__)
-
-
-
-logger.info('Start pythonservice.py!')
-logger.critical('Woouou')
-
-'''
-def setupLogging():
+def getLogger(service_name):
     # Set the debug level
     logging.basicConfig(level=logging.DEBUG)
     # Create a logger
-    logger = logging.getLogger(__name__)
-    # Create a handler
-    handler = logging.handlers.SysLogHandler(address='/dev/log')
-    # Create a formatter
-    formatter = logging.Formatter('%(module)s: <%(levelname)s> %(message)s')
-    # Set the formatter
-    handler.setFormatter(formatter)
-    # Add the handler
-    #logger.addHandler(handler)
-    # Return the logger
-    return logger
+    return logging.getLogger(service_name)
 
 
-syslogger = setupLogging()
+logger = getLogger('pythonservice')
+
+
+class MainApp(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.kill_me = False
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
+
+    def sigterm_handler(self, signal, frame):
+        logger.debug('SIGTERM')
+        self.stop()
+
+    def run(self):
+        self.kill_me = False
+
+        logger.debug('Starting application....')
+
+        cnt = 0
+
+        while not self.kill_me:
+            logger.debug(cnt)
+            cnt += 1
+            time.sleep(1)
+
+        logger.debug('Stopping application....')
+
+    def stop(self):
+        self.kill_me = True
 
 
 
-syslogger.info('Start pythonservice.py!')
-syslogger.critical('Woouou')
-'''
+
+
+def main():
+    logger.debug('Welcome!')
+    
+    app = MainApp()
+    app.start()
+
+    while app.isAlive():
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            app.stop()
+            break
+
+if __name__ == '__main__':
+    main()
 

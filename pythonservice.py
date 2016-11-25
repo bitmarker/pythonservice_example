@@ -42,9 +42,6 @@ class MainApp(threading.Thread):
         self.kill_me = True
 
 
-
-
-
 def main():
     logger.debug('Welcome!')
     
